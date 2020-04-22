@@ -1,6 +1,10 @@
 
 import java.awt.Graphics;
-import java.util.Timer;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.List;
+import javax.swing.JOptionPane;
+import javax.swing.Timer;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -21,7 +25,7 @@ public class Board extends javax.swing.JPanel {
     private Food specialFood;
     private Timer snakeTimer;
     private Timer specialFoodTimer;
-    private int DeltaTime;
+    private int deltaTime;
 
     /**
      * Creates new form Board
@@ -32,14 +36,31 @@ public class Board extends javax.swing.JPanel {
     }
     
     private void myInit() {
-        // Finish this method
+        
+        deltaTime = 500;
+       
+        
+         snakeTimer = new Timer (deltaTime, new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent ae) {
+               
+                
+                
+            }
+
+           
+
+        });
+        snakeTimer.start();
+        
+        
     }
     
     public Board(int numRows, int numCols) {
         // Finish this method
     }
     
-    public boolean colideFood() {
+    public boolean colideFood(int row, int col) {
         // Finish this method
         return false;
     }
