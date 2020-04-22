@@ -20,15 +20,17 @@ import javax.swing.Timer;
  */
 public class Board extends javax.swing.JPanel {
     
-    private int numRows;
-    private int numCols;
     private Snake snake;
     private Food food;
     private Food specialFood;
     private Timer snakeTimer;
     private Timer specialFoodTimer;
     private int deltaTime;
-
+    public  int numRows = 15;
+    public  int numCols = 15;
+    private final int INITIAL_DELTA_TIME = 300;
+    private ScoreBoard scoreBoard;
+    
     /**
      * Creates new form Board
      */
@@ -36,29 +38,22 @@ public class Board extends javax.swing.JPanel {
         initComponents();
         myInit();
     }
+
+    public void setScoreBoard(ScoreBoard scoreBoard) {
+        this.scoreBoard = scoreBoard;
+    }
+    
+    
     
     private void myInit() {
         
         snake = new Snake(5, 5, 3, this);
+        food = new Food(snake, this);
         
-        
-        deltaTime = 300;
+        deltaTime = INITIAL_DELTA_TIME;
        
         
-         snakeTimer = new Timer (deltaTime, new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent ae) {
-               
-                snake.move();
-                repaint();
-                
-                
-            }
-
-           
-
-        });
-        snakeTimer.start();
+        createTimer();
         
         MyKeyAdapter keyAdepter = new MyKeyAdapter();
         addKeyListener(keyAdepter);
@@ -66,16 +61,53 @@ public class Board extends javax.swing.JPanel {
     }
     
     public Board(int numRows, int numCols) {
-        // Finish this method
+        
+        initComponents();
+        myInit();
+        this.numRows = numRows;
+        this.numCols = numCols;
+                
     }
     
     public boolean colideFood(int row, int col) {
-        // Finish this method
+        
+        Node node = food.getPosition();
+        
+        if (row == node.getRow() && col == node.getCol()) {
+            foodEat();
+            return true;
+        }
+        
         return false;
     }
     
+    private void foodEat() {
+        food.generateFood(snake);
+        if(deltaTime > 100) {
+            deltaTime -= 20;
+        }
+        scoreBoard.incrementScore(10);
+        createTimer();
+    }
+    
+    public int squareWidth() {
+        return (int) Math.floor(getWidth()/numCols);
+    }
+    
+    public int squareHeight() {
+        return (int) Math.floor(getHeight()/numRows);
+    }
+    
     public void gameOver() {
-        // Finish this method
+        
+        int gameOver = JOptionPane.showConfirmDialog(this, "Game Over, wanna play again?", "Game over", 0);
+        
+        if (gameOver == 0) {
+            restart();
+        } else {
+            snakeTimer.stop();
+        }
+        
     }
     
     @Override 
@@ -85,8 +117,20 @@ public class Board extends javax.swing.JPanel {
         
         
         snake.paint(g);
+        food.paint(g);
         
     }
+    
+    
+    private void restart() {
+        
+        snake = new Snake(5, 5, 3, this);
+        food.generateFood(snake);
+        deltaTime = INITIAL_DELTA_TIME;
+        scoreBoard.resetScore();
+        
+    }
+    
     
     class MyKeyAdapter extends KeyAdapter {
 
@@ -109,6 +153,28 @@ public class Board extends javax.swing.JPanel {
             }
         }
     }
+    
+     private void createTimer() {
+       if (snakeTimer != null) {
+           snakeTimer.stop();
+       }
+        snakeTimer = new Timer(deltaTime, new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent ae) {
+               
+                snake.move();
+                repaint();
+                
+                
+            }
+
+           
+
+        });
+        snakeTimer.start();
+        
+    }
+    
 
     /**
      * This method is called from within the constructor to initialize the form.
