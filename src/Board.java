@@ -2,6 +2,8 @@
 import java.awt.Graphics;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.util.List;
 import javax.swing.JOptionPane;
 import javax.swing.Timer;
@@ -37,13 +39,18 @@ public class Board extends javax.swing.JPanel {
     
     private void myInit() {
         
-        deltaTime = 500;
+        snake = new Snake(5, 5, 3, this);
+        
+        
+        deltaTime = 300;
        
         
          snakeTimer = new Timer (deltaTime, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent ae) {
                
+                snake.move();
+                repaint();
                 
                 
             }
@@ -53,7 +60,9 @@ public class Board extends javax.swing.JPanel {
         });
         snakeTimer.start();
         
-        
+        MyKeyAdapter keyAdepter = new MyKeyAdapter();
+        addKeyListener(keyAdepter);
+        setFocusable(true);
     }
     
     public Board(int numRows, int numCols) {
@@ -71,8 +80,34 @@ public class Board extends javax.swing.JPanel {
     
     @Override 
     protected void paintComponent(Graphics g)  {
-        // Finish this method
-        // Paint the Snake and the food here
+       
+        super.paintComponent(g);
+        
+        
+        snake.paint(g);
+        
+    }
+    
+    class MyKeyAdapter extends KeyAdapter {
+
+        @Override
+        public void keyPressed(KeyEvent e) {
+            switch (e.getKeyCode()) {
+                case KeyEvent.VK_UP:
+                    snake.setDirection(Direction.UP);
+                    break;
+                case KeyEvent.VK_RIGHT:
+                    snake.setDirection(Direction.RIGHT);
+                    break;
+                case KeyEvent.VK_DOWN:
+                    snake.setDirection(Direction.DOWN);
+                    break;
+                case KeyEvent.VK_LEFT:
+                   snake.setDirection(Direction.LEFT);
+                    break;
+                
+            }
+        }
     }
 
     /**
@@ -100,3 +135,4 @@ public class Board extends javax.swing.JPanel {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     // End of variables declaration//GEN-END:variables
 }
+
